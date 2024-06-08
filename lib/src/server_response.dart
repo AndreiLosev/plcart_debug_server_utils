@@ -32,6 +32,10 @@ class ServerResponse {
 
   ServerResponse(this.responseStatus, this.message);
 
+  ServerResponse.ok()
+      : responseStatus = ResponseStatus.ok,
+        message = {'message': 'success'};
+
   ServerResponse.fromBytes(Uint8List bytes) {
     final map = deserialize(bytes) as Map;
     responseStatus = (map['responseStatus'] as int).toResponseStatus();
