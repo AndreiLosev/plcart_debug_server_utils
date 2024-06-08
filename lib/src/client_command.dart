@@ -8,19 +8,19 @@ enum CommandKind {
   unsubscribeTask;
 
   int code() => switch (this) {
-    CommandKind.runEvent => 10,
-    CommandKind.subscribeTask => 20,
-    CommandKind.unsubscribeTask => 30,
-  };
+        CommandKind.runEvent => 10,
+        CommandKind.subscribeTask => 20,
+        CommandKind.unsubscribeTask => 30,
+      };
 }
 
 extension ToCommandKind on int {
   CommandKind toCommandKind() => switch (this) {
-    10 => CommandKind.runEvent,
-    20 => CommandKind.subscribeTask,
-    30 => CommandKind.unsubscribeTask,
-    _ => throw Exception("invalide CommandKind code: $this"),
-  };
+        10 => CommandKind.runEvent,
+        20 => CommandKind.subscribeTask,
+        30 => CommandKind.unsubscribeTask,
+        _ => throw Exception("invalide CommandKind code: $this"),
+      };
 }
 
 class ClientCommand<T> {
@@ -35,7 +35,7 @@ class RunEventPayload {
   late final List positionArguments;
   late final Map<Symbol, dynamic> namedArguments;
 
-  RunEventPayload (Map map) {
+  RunEventPayload(Map map) {
     eventName = map['eventName'];
     positionArguments = map['positionArguments'];
     namedArguments = {};
@@ -45,8 +45,12 @@ class RunEventPayload {
   }
 }
 
-(CommandKind, dynamic) parseClientCommand(Uint8List bytes) {
+ClientCommand parseClientCommand(Uint8List bytes) {
   final map = deserialize(bytes) as Map;
   final kind = (map['CommandKind'] as int).toCommandKind();
-  return (kind, map['payload']);
+  return switch (kind) {
+    CommandKind.runEvent => ClientCommand(kind, map['payload']),
+    CommandKind.subscribeTask => ClientCommand(kind, map['payload']),
+    CommandKind.unsubscribeTask => ClientCommand(kind, map['payload']),
+  };
 }
