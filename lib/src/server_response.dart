@@ -30,7 +30,9 @@ class ServerResponse {
   late final ResponseStatus responseStatus;
   late final Map message;
 
-  ServerResponse(Uint8List bytes) {
+  ServerResponse(this.responseStatus, this.message);
+
+  ServerResponse.fromBytes(Uint8List bytes) {
     final map = deserialize(bytes) as Map;
     responseStatus = (map['responseStatus'] as int).toResponseStatus();
     message = map['message'] as Map;
