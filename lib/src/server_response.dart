@@ -32,9 +32,8 @@ class ServerResponse {
 
   ServerResponse(this.responseStatus, this.message);
 
-  ServerResponse.ok()
-      : responseStatus = ResponseStatus.ok,
-        message = {'message': 'success'};
+  ServerResponse.ok([this.message = const {'message': 'success'}])
+      : responseStatus = ResponseStatus.ok;
 
   ServerResponse.fromBytes(Uint8List bytes) {
     final map = deserialize(bytes) as Map;
