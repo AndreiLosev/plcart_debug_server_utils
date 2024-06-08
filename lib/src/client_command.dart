@@ -3,11 +3,15 @@ import 'dart:typed_data';
 import 'package:msgpack_dart/msgpack_dart.dart';
 
 enum CommandKind {
+  getRegisteredEvents,
+  getRegisteredTasks,
   runEvent,
   subscribeTask,
   unsubscribeTask;
 
   int code() => switch (this) {
+        CommandKind.getRegisteredEvents => 3,
+        CommandKind.getRegisteredTasks => 5,
         CommandKind.runEvent => 10,
         CommandKind.subscribeTask => 20,
         CommandKind.unsubscribeTask => 30,
@@ -16,6 +20,8 @@ enum CommandKind {
 
 extension ToCommandKind on int {
   CommandKind toCommandKind() => switch (this) {
+        3 => CommandKind.getRegisteredEvents,
+        5 => CommandKind.getRegisteredTasks,
         10 => CommandKind.runEvent,
         20 => CommandKind.subscribeTask,
         30 => CommandKind.unsubscribeTask,
@@ -49,8 +55,10 @@ ClientCommand parseClientCommand(Uint8List bytes) {
   final map = deserialize(bytes) as Map;
   final kind = (map['CommandKind'] as int).toCommandKind();
   return switch (kind) {
-    CommandKind.runEvent => ClientCommand(kind, map['payload']),
-    CommandKind.subscribeTask => ClientCommand(kind, map['payload']),
-    CommandKind.unsubscribeTask => ClientCommand(kind, map['payload']),
+    CommandKind.getRegisteredEvents => ClientCommand(kind, null),
+    CommandKind.getRegisteredTasks => ClientCommand(kind, null),
+    CommandKind.runEvent => ClientCommand(kind, RunEventPayload(map['payload'])),
+    CommandKind.subscribeTask => ClientCommand(kind, map['payload'] as String),
+    CommandKind.unsubscribeTask => ClientCommand(kind, map['payload'] as String),
   };
 }
