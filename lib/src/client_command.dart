@@ -55,13 +55,15 @@ class RunEventPayload {
 }
 
 class SetTaskValuePayload {
+  final String taskName;
   final Object value;
   final int? index;
   final String? sIndex;
   final ActionValuePayload? action;
 
   SetTaskValuePayload(Map map)
-      : value = map['value'],
+      : taskName = map['taskName'],
+        value = map['value'],
         index = map['index'],
         sIndex = map['sIndex'],
         action = map['action'];
