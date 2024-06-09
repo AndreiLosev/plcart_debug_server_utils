@@ -32,11 +32,22 @@ extension ToCommandKind on int {
       };
 }
 
-class ClientCommand<T> {
+extension ToSerivalipzbe on Object {
+  Object toSerivalipzbe() => this;
+}
+
+class ClientCommand {
   final CommandKind kind;
-  final T payload;
+  final Object? payload;
 
   ClientCommand(this.kind, this.payload);
+
+  Uint8List toBytes() {
+    return serialize({
+      'kind': kind.code(),
+      'payload': payload?.toSerivalipzbe(),
+    });
+  }
 }
 
 class RunEventPayload {
@@ -52,6 +63,14 @@ class RunEventPayload {
       namedArguments[Symbol(item.key)] = item.value;
     }
   }
+
+  Map<String, dynamic> toSerivalipzbe() {
+    return {
+      'eventName': eventName,
+      'positionArguments': positionArguments,
+      'namedArguments': namedArguments,
+    };
+  }
 }
 
 class SetTaskValuePayload {
@@ -66,12 +85,35 @@ class SetTaskValuePayload {
         value = map['value'],
         index = map['index'],
         sIndex = map['sIndex'],
-        action = map['action'];
+        action = (map['action'] as int?)?.toActionValuePayload();
+
+  Map<String, dynamic> toSerivalipzbe() {
+    return {
+      'taskName': taskName,
+      'value': value,
+      'index': index,
+      'sIndex': sIndex,
+      'action': action?.code(),
+    };
+  }
 }
 
 enum ActionValuePayload {
   add,
   remove;
+
+  int code() => switch (this) {
+        ActionValuePayload.add => 1,
+        ActionValuePayload.remove => 2,
+      };
+}
+
+extension ToActionValuePayload on int {
+  ActionValuePayload toActionValuePayload() => switch (this) {
+    1 => ActionValuePayload.add,
+    2 => ActionValuePayload.remove,
+    _ => throw Exception("invalid ActionValuePayload code: $this")
+};
 }
 
 ClientCommand parseClientCommand(Uint8List bytes) {
