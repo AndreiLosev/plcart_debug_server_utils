@@ -55,7 +55,9 @@ class RunEventPayload {
   late final List positionArguments;
   late final Map<Symbol, dynamic> namedArguments;
 
-  RunEventPayload(Map map) {
+  RunEventPayload(this.eventName, this.positionArguments, this.namedArguments);
+
+  RunEventPayload.fromMap(Map map) {
     eventName = map['eventName'];
     positionArguments = map['positionArguments'];
     namedArguments = {};
