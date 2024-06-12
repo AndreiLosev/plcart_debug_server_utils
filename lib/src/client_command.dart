@@ -119,7 +119,7 @@ extension ToActionValuePayload on int {
 
 ClientCommand parseClientCommand(Uint8List bytes) {
   final map = deserialize(bytes) as Map;
-  final kind = (map['CommandKind'] as int).toCommandKind();
+  final kind = (map['kind'] as int).toCommandKind();
   return switch (kind) {
     CommandKind.getRegisteredEvents => ClientCommand(kind, null),
     CommandKind.getRegisteredTasks => ClientCommand(kind, null),
