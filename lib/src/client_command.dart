@@ -55,20 +55,14 @@ class ClientCommand {
 class RunEventPayload {
   late final String eventName;
   late final List positionArguments;
-  late final Map<Symbol, dynamic> namedArguments;
+  late final Map<String, dynamic> namedArguments;
 
-  RunEventPayload(this.eventName, this.positionArguments,
-      Map<String, dynamic> namedArguments)
-      : namedArguments = Map.fromEntries(namedArguments.entries
-            .map((item) => MapEntry(Symbol(item.key), item.value)));
+  RunEventPayload(this.eventName, this.positionArguments, this.namedArguments);
 
   RunEventPayload.fromMap(Map map) {
     eventName = map['eventName'];
     positionArguments = map['positionArguments'];
-    namedArguments = {};
-    for (var item in (map['namedArguments'] as Map).entries) {
-      namedArguments[Symbol(item.key)] = item.value;
-    }
+    namedArguments = map['namedArguments'];
   }
 
   Map<String, dynamic> toSerivalipzbe() {
