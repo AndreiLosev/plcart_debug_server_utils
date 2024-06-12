@@ -125,7 +125,7 @@ ClientCommand parseClientCommand(Uint8List bytes) {
     CommandKind.getRegisteredEvents => ClientCommand(kind, null),
     CommandKind.getRegisteredTasks => ClientCommand(kind, null),
     CommandKind.runEvent =>
-      ClientCommand(kind, RunEventPayload(map['payload'])),
+      ClientCommand(kind, RunEventPayload.fromMap(map['payload'])),
     CommandKind.subscribeTask => ClientCommand(kind, map['payload'] as String),
     CommandKind.unsubscribeTask =>
       ClientCommand(kind, map['payload'] as String),
