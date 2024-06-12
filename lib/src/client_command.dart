@@ -32,10 +32,6 @@ extension ToCommandKind on int {
       };
 }
 
-extension ToSerivalipzbe on Object {
-  Object toSerivalipzbe() => this;
-}
-
 class ClientCommand {
   final CommandKind kind;
   final Object? payload;
@@ -43,9 +39,14 @@ class ClientCommand {
   ClientCommand(this.kind, this.payload);
 
   Uint8List toBytes() {
+    final serializabe = switch (payload) {
+      RunEventPayload() => (payload as RunEventPayload).toSerivalipzbe(),
+      SetTaskValuePayload() => (payload as SetTaskValuePayload).toSerivalipzbe(),
+      _ => payload,
+    };
     return serialize({
       'kind': kind.code(),
-      'payload': payload?.toSerivalipzbe(),
+      'payload': serializabe,
     });
   }
 }
@@ -112,10 +113,10 @@ enum ActionValuePayload {
 
 extension ToActionValuePayload on int {
   ActionValuePayload toActionValuePayload() => switch (this) {
-    1 => ActionValuePayload.add,
-    2 => ActionValuePayload.remove,
-    _ => throw Exception("invalid ActionValuePayload code: $this")
-};
+        1 => ActionValuePayload.add,
+        2 => ActionValuePayload.remove,
+        _ => throw Exception("invalid ActionValuePayload code: $this")
+      };
 }
 
 ClientCommand parseClientCommand(Uint8List bytes) {
