@@ -41,7 +41,8 @@ class ClientCommand {
   Uint8List toBytes() {
     final serializabe = switch (payload) {
       RunEventPayload() => (payload as RunEventPayload).toSerivalipzbe(),
-      SetTaskValuePayload() => (payload as SetTaskValuePayload).toSerivalipzbe(),
+      SetTaskValuePayload() =>
+        (payload as SetTaskValuePayload).toSerivalipzbe(),
       _ => payload,
     };
     return serialize({
@@ -56,7 +57,10 @@ class RunEventPayload {
   late final List positionArguments;
   late final Map<Symbol, dynamic> namedArguments;
 
-  RunEventPayload(this.eventName, this.positionArguments, this.namedArguments);
+  RunEventPayload(this.eventName, this.positionArguments,
+      Map<String, dynamic> namedArguments)
+      : namedArguments = Map.fromEntries(namedArguments.entries
+            .map((item) => MapEntry(Symbol(item.key), item.value)));
 
   RunEventPayload.fromMap(Map map) {
     eventName = map['eventName'];
