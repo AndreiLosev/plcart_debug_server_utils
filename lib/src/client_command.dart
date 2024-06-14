@@ -45,10 +45,11 @@ class ClientCommand {
         (payload as SetTaskValuePayload).toSerivalipzbe(),
       _ => payload,
     };
-    return serialize({
-      'kind': kind.code(),
-      'payload': serializabe,
-    });
+   
+    final payloadBytes = serialize(serializabe);
+    final paylodLen = ByteData(4)..setUint32(0, payloadBytes.length);
+
+    return Uint8List.fromList([kind.code(), ...paylodLen.buffer.asUint8List(), ...payloadBytes]);
   }
 }
 
@@ -117,17 +118,16 @@ extension ToActionValuePayload on int {
       };
 }
 
-ClientCommand parseClientCommand(Uint8List bytes) {
-  final map = deserialize(bytes) as Map;
-  final kind = (map['kind'] as int).toCommandKind();
+ClientCommand parseClientCommand(int type, dynamic payload) {
+  final kind = type.toCommandKind();
   return switch (kind) {
     CommandKind.getRegisteredEvents => ClientCommand(kind, null),
     CommandKind.getRegisteredTasks => ClientCommand(kind, null),
     CommandKind.runEvent =>
-      ClientCommand(kind, RunEventPayload.fromMap(map['payload'])),
-    CommandKind.subscribeTask => ClientCommand(kind, map['payload'] as String),
+      ClientCommand(kind, RunEventPayload.fromMap(payload)),
+    CommandKind.subscribeTask => ClientCommand(kind, payload),
     CommandKind.unsubscribeTask =>
-      ClientCommand(kind, map['payload'] as String),
-    CommandKind.setTaskValue => ClientCommand(kind, map['payload']),
+      ClientCommand(kind, payload),
+    CommandKind.setTaskValue => ClientCommand(kind, payload),
   };
 }

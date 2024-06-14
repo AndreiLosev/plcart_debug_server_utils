@@ -43,9 +43,4 @@ class ServerResponse {
     responseStatus = (map['responseStatus'] as int).toResponseStatus();
     message = map['message'] as Map;
   }
-
-  Uint8List toBytes() => serialize({
-        'responseStatus': responseStatus.code(),
-        'message': message,
-      });
 }
