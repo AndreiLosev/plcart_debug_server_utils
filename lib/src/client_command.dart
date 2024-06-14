@@ -1,7 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:msgpack_dart/msgpack_dart.dart';
-
 enum CommandKind {
   getRegisteredEvents,
   getRegisteredTasks,
@@ -32,28 +28,29 @@ extension ToCommandKind on int {
       };
 }
 
+abstract interface class CommandPayload {
+  Map<String, dynamic> toMap();
+}
+
 class ClientCommand {
   final CommandKind kind;
-  final Object? payload;
+  final CommandPayload? payload;
 
   ClientCommand(this.kind, this.payload);
+}
 
-  Uint8List toBytes() {
-    final serializabe = switch (payload) {
-      RunEventPayload() => (payload as RunEventPayload).toSerivalipzbe(),
-      SetTaskValuePayload() =>
-        (payload as SetTaskValuePayload).toSerivalipzbe(),
-      _ => payload,
-    };
-   
-    final payloadBytes = serialize(serializabe);
-    final paylodLen = ByteData(4)..setUint32(0, payloadBytes.length);
+class SimplePayload implements CommandPayload {
+  String value;
 
-    return Uint8List.fromList([kind.code(), ...paylodLen.buffer.asUint8List(), ...payloadBytes]);
+  SimplePayload(this.value);
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {'value': value};
   }
 }
 
-class RunEventPayload {
+class RunEventPayload implements CommandPayload {
   late final String eventName;
   late final List positionArguments;
   late final Map<String, dynamic> namedArguments;
@@ -66,7 +63,8 @@ class RunEventPayload {
     namedArguments = map['namedArguments'];
   }
 
-  Map<String, dynamic> toSerivalipzbe() {
+  @override
+  Map<String, dynamic> toMap() {
     return {
       'eventName': eventName,
       'positionArguments': positionArguments,
@@ -75,7 +73,7 @@ class RunEventPayload {
   }
 }
 
-class SetTaskValuePayload {
+class SetTaskValuePayload implements CommandPayload {
   final String taskName;
   final Object value;
   final int? index;
@@ -89,7 +87,8 @@ class SetTaskValuePayload {
         sIndex = map['sIndex'],
         action = (map['action'] as int?)?.toActionValuePayload();
 
-  Map<String, dynamic> toSerivalipzbe() {
+  @override
+  Map<String, dynamic> toMap() {
     return {
       'taskName': taskName,
       'value': value,
@@ -126,8 +125,7 @@ ClientCommand parseClientCommand(int type, dynamic payload) {
     CommandKind.runEvent =>
       ClientCommand(kind, RunEventPayload.fromMap(payload)),
     CommandKind.subscribeTask => ClientCommand(kind, payload),
-    CommandKind.unsubscribeTask =>
-      ClientCommand(kind, payload),
+    CommandKind.unsubscribeTask => ClientCommand(kind, payload),
     CommandKind.setTaskValue => ClientCommand(kind, payload),
   };
 }
