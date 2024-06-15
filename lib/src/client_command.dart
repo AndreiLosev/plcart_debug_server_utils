@@ -60,7 +60,7 @@ class RunEventPayload implements CommandPayload {
   RunEventPayload.fromMap(Map map) {
     eventName = map['eventName'];
     positionArguments = map['positionArguments'];
-    namedArguments = map['namedArguments'];
+    namedArguments = (map['namedArguments'] as Map).cast();
   }
 
   @override
