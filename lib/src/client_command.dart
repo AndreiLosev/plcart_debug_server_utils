@@ -42,7 +42,7 @@ class ClientCommand {
 class SimplePayload implements CommandPayload {
   String value;
 
-  SimplePayload(this.value);
+  SimplePayload(Map payload): value = payload['value'];
 
   @override
   Map<String, dynamic> toMap() {
@@ -125,9 +125,9 @@ ClientCommand parseClientCommand(int type, dynamic payload) {
     CommandKind.runEvent =>
       ClientCommand(kind, RunEventPayload.fromMap(payload)),
     CommandKind.subscribeTask =>
-      ClientCommand(kind, SimplePayload(payload['value'])),
+      ClientCommand(kind, SimplePayload(payload)),
     CommandKind.unsubscribeTask =>
-      ClientCommand(kind, SimplePayload(payload['value'])),
+      ClientCommand(kind, SimplePayload(payload)),
     CommandKind.setTaskValue =>
       ClientCommand(kind, SetTaskValuePayload(payload)),
   };
