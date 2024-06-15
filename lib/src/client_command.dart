@@ -124,8 +124,11 @@ ClientCommand parseClientCommand(int type, dynamic payload) {
     CommandKind.getRegisteredTasks => ClientCommand(kind, null),
     CommandKind.runEvent =>
       ClientCommand(kind, RunEventPayload.fromMap(payload)),
-    CommandKind.subscribeTask => ClientCommand(kind, payload),
-    CommandKind.unsubscribeTask => ClientCommand(kind, payload),
-    CommandKind.setTaskValue => ClientCommand(kind, payload),
+    CommandKind.subscribeTask =>
+      ClientCommand(kind, SimplePayload(payload['value'])),
+    CommandKind.unsubscribeTask =>
+      ClientCommand(kind, SimplePayload(payload['value'])),
+    CommandKind.setTaskValue =>
+      ClientCommand(kind, SetTaskValuePayload(payload)),
   };
 }
