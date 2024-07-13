@@ -1,7 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:msgpack_dart/msgpack_dart.dart';
-
 enum ResponseStatus {
   ok,
   taskNotFound,
@@ -32,15 +28,10 @@ extension ToResponseStatus on int {
 class ServerResponse {
   late final ResponseStatus responseStatus;
   late final Map message;
+  late final int id;
 
-  ServerResponse(this.responseStatus, this.message);
+  ServerResponse(this.responseStatus, this.message, [this.id = 0]);
 
-  ServerResponse.ok([this.message = const {'message': 'success'}])
+  ServerResponse.ok([this.message = const {'message': 'success'}, this.id = 0])
       : responseStatus = ResponseStatus.ok;
-
-  ServerResponse.fromBytes(Uint8List bytes) {
-    final map = deserialize(bytes) as Map;
-    responseStatus = (map['responseStatus'] as int).toResponseStatus();
-    message = map['message'] as Map;
-  }
 }
