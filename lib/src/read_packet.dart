@@ -16,35 +16,39 @@ class PackedPrefixException {
   }
 }
 
-Future<(int, dynamic)> readPacket(FutureSoket soket) async {
+Future<(int type, int id, dynamic payload)> readPacket(FutureSoket soket) async {
   final startBuf = await soket.read(6);
 
   if (!startPrefixIsvalid(startBuf)) {
     throw PackedPrefixException("start buffer: $startBuf");
   }
 
-  var buf = ByteData.view((await soket.read(5)).buffer);
+  var buf = ByteData.view((await soket.read(7)).buffer);
   final type = buf.getUint8(0);
-  final dataLen = buf.getUint32(1);
+  final id = buf.getUint16(1);
+  final dataLen = buf.getUint32(3);
   final payload = deserialize(await soket.read(dataLen));
 
-  return (type, payload);
+  return (type, id, payload);
 }
 
-void writePacket(FutureSoket soket, int type, dynamic payload) {
+void writePacket(FutureSoket soket, int type, int id, dynamic payload) {
   final bPayload = serialize(payload);
-  final payloadLen = ByteData(4)..setInt32(0, bPayload.length);
+  final payloadLen = ByteData(4)..setUint32(0, bPayload.length);
+  final idbuff = ByteData(2)..setUint16(0, id);
 
-  final buffer = Uint8List(11 + bPayload.length);
+  final buffer = Uint8List(13 + bPayload.length);
   setStartPrefix(buffer);
   buffer[6] = type;
-  buffer[7] = payloadLen.getUint8(0);
-  buffer[8] = payloadLen.getUint8(1);
-  buffer[9] = payloadLen.getUint8(2);
-  buffer[10] = payloadLen.getUint8(3);
+  buffer[7] = idbuff.getUint8(0);
+  buffer[8] = idbuff.getUint8(1);
+  buffer[9] = payloadLen.getUint8(0);
+  buffer[10] = payloadLen.getUint8(1);
+  buffer[11] = payloadLen.getUint8(2);
+  buffer[12] = payloadLen.getUint8(3);
 
   for (var i = 0; i < bPayload.length; i++) {
-    buffer[11 + i] = bPayload[i];
+    buffer[13 + i] = bPayload[i];
   }
 
   soket.write(Uint8List.fromList(buffer));
