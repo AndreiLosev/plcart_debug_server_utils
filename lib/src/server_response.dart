@@ -32,6 +32,6 @@ class ServerResponse {
 
   ServerResponse(this.responseStatus, this.message, [this.id = 0]);
 
-  ServerResponse.ok([this.message = const {'message': 'success'}, this.id = 0])
+  ServerResponse.ok({this.message = const {'message': 'success'}, this.id = 0})
       : responseStatus = ResponseStatus.ok;
 }
