@@ -16,7 +16,8 @@ class PackedPrefixException {
   }
 }
 
-Future<(int type, int id, dynamic payload)> readPacket(FutureSoket soket) async {
+Future<(int type, int id, dynamic payload)> readPacket(
+    FutureSoket soket) async {
   final startBuf = await soket.read(6);
 
   if (!startPrefixIsvalid(startBuf)) {
@@ -33,7 +34,12 @@ Future<(int type, int id, dynamic payload)> readPacket(FutureSoket soket) async 
 }
 
 void writePacket(FutureSoket soket, int type, int id, dynamic payload) {
-  final bPayload = serialize(payload);
+  late final Uint8List bPayload;
+  try {
+    bPayload = serialize(payload.toMap());
+  } on NoSuchMethodError {
+    bPayload = serialize(payload);
+  }
   final payloadLen = ByteData(4)..setUint32(0, bPayload.length);
   final idbuff = ByteData(2)..setUint16(0, id);
 
