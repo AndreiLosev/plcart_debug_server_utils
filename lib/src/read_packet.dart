@@ -34,12 +34,7 @@ Future<(int type, int id, dynamic payload)> readPacket(
 }
 
 void writePacket(FutureSoket soket, int type, int id, dynamic payload) {
-  late final Uint8List bPayload;
-  try {
-    bPayload = serialize(payload.toMap());
-  } on NoSuchMethodError {
-    bPayload = serialize(payload);
-  }
+  final Uint8List bPayload = serialize(payload);
   final payloadLen = ByteData(4)..setUint32(0, bPayload.length);
   final idbuff = ByteData(2)..setUint16(0, id);
 
