@@ -1,6 +1,7 @@
 enum ResponseStatus {
   ok,
   taskNotFound,
+  setInvalidValueOrKey,
   eventNotFound,
   alreadySubscribed,
   internalError;
@@ -8,6 +9,7 @@ enum ResponseStatus {
   int code() => switch (this) {
         ResponseStatus.ok => 0,
         ResponseStatus.taskNotFound => 10,
+        ResponseStatus.setInvalidValueOrKey => 12,
         ResponseStatus.alreadySubscribed => 15,
         ResponseStatus.eventNotFound => 20,
         ResponseStatus.internalError => 100,
@@ -18,6 +20,7 @@ extension ToResponseStatus on int {
   ResponseStatus toResponseStatus() => switch (this) {
         0 => ResponseStatus.ok,
         10 => ResponseStatus.taskNotFound,
+        12 => ResponseStatus.setInvalidValueOrKey,
         15 => ResponseStatus.alreadySubscribed,
         20 => ResponseStatus.taskNotFound,
         100 => ResponseStatus.internalError,
