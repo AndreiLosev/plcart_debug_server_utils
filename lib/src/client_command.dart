@@ -75,27 +75,23 @@ class RunEventPayload implements CommandPayload {
 
 class SetTaskValuePayload implements CommandPayload {
   final String taskName;
-  final Object value;
-  final int? index;
-  final String? sIndex;
-  final ActionValuePayload? action;
+  final Map<String, dynamic> params;
 
   SetTaskValuePayload(Map map)
       : taskName = map['taskName'],
-        value = map['value'],
-        index = map['index'],
-        sIndex = map['sIndex'],
-        action = (map['action'] as int?)?.toActionValuePayload();
+        params = _setMap(map.cast());
 
   @override
   Map<String, dynamic> toMap() {
     return {
       'taskName': taskName,
-      'value': value,
-      'index': index,
-      'sIndex': sIndex,
-      'action': action?.code(),
+      'params': params,
     };
+  }
+
+  static Map<String, dynamic> _setMap(Map<String, dynamic> value) {
+    value.remove('taskName');
+    return value;
   }
 }
 
