@@ -47,7 +47,7 @@ class ForseValue {
     for (var fieldName in fields) {
       if (fieldAndKeys.startsWith(fieldName)) {
         field = fieldName;
-        text = fieldAndKeys.substring(fieldName.length);
+        text = fieldAndKeys.replaceFirst(fieldName, "");
         break;
       }
     }
@@ -76,9 +76,24 @@ class ForseValue {
   }
 
   static List<String> _parseKeys(String text) {
-    return RegExp("\\[([a-zA-Z0-9]|_)+\\]").allMatches(text).map((m) {
-      return m[0]!.substring(1, m[0]!.length - 1).trim();
-    }).toList();
+    return text
+        .split('.')
+        .map((i) {
+          final matches = RegExp("\\[([a-zA-Z0-9]|_)+\\]").allMatches(i);
+          if (matches.isEmpty) {
+            return [i];
+          }
+          final result = matches.map((m) {
+            return m[0]!.substring(1, m[0]!.length - 1).trim();
+          });
+
+          return switch (matches.first.start > 0) {
+            true => [i.substring(0, matches.first.start), ...result],
+            false => result,
+          };
+        })
+        .expand((e) => e)
+        .toList();
   }
 
   static Object? _parseValue(String sValue) {
