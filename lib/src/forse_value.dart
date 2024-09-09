@@ -55,7 +55,7 @@ class ForseValue {
     keys = _parseKeys(text);
   }
 
-  Map toMap() => {
+  Map<String, dynamic> toMap() => {
         "task": task,
         "field": field,
         "keys": keys,

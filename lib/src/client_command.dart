@@ -1,3 +1,5 @@
+import 'package:debug_server_utils/debug_server_utils.dart';
+
 enum CommandKind {
   getRegisteredEvents,
   getRegisteredTasks,
@@ -42,7 +44,7 @@ class ClientCommand {
 class SimplePayload implements CommandPayload {
   String value;
 
-  SimplePayload(Map payload): value = payload['value'];
+  SimplePayload(Map payload) : value = payload['value'];
 
   @override
   Map<String, dynamic> toMap() {
@@ -74,24 +76,13 @@ class RunEventPayload implements CommandPayload {
 }
 
 class SetTaskValuePayload implements CommandPayload {
-  final String taskName;
-  final Map<String, dynamic> params;
+  final ForseValue value;
 
-  SetTaskValuePayload(Map map)
-      : taskName = map['taskName'],
-        params = _setMap(map.cast());
+  SetTaskValuePayload(this.value);
 
   @override
   Map<String, dynamic> toMap() {
-    return {
-      'taskName': taskName,
-      'params': params,
-    };
-  }
-
-  static Map<String, dynamic> _setMap(Map<String, dynamic> value) {
-    value.remove('taskName');
-    return value;
+    return value.toMap();
   }
 }
 
@@ -120,10 +111,8 @@ ClientCommand parseClientCommand(int type, dynamic payload) {
     CommandKind.getRegisteredTasks => ClientCommand(kind, null),
     CommandKind.runEvent =>
       ClientCommand(kind, RunEventPayload.fromMap(payload)),
-    CommandKind.subscribeTask =>
-      ClientCommand(kind, SimplePayload(payload)),
-    CommandKind.unsubscribeTask =>
-      ClientCommand(kind, SimplePayload(payload)),
+    CommandKind.subscribeTask => ClientCommand(kind, SimplePayload(payload)),
+    CommandKind.unsubscribeTask => ClientCommand(kind, SimplePayload(payload)),
     CommandKind.setTaskValue =>
       ClientCommand(kind, SetTaskValuePayload(payload)),
   };
