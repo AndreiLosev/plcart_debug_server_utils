@@ -7,11 +7,11 @@ enum Action {
 
   static Action parse(String str) {
     switch (str) {
-      case 'assign':
+      case 'Action.assign':
         return Action.assign;
-      case 'add':
+      case 'Action.add':
         return Action.add;
-      case 'remove':
+      case 'Action.remove':
         return Action.remove;
       default:
         throw Exception("unknown action: $str");
@@ -60,7 +60,7 @@ class ForseValue {
         "field": field,
         "keys": keys,
         "value": value,
-        "action": action,
+        "action": action.toString(),
       };
 
   static (Action, String) _getLeftAndRight(String text) {
