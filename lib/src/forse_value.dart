@@ -3,19 +3,32 @@ import 'dart:convert';
 enum Action {
   assign,
   add,
-  remove;
+  remove,
+  removeLast;
 
   static Action parse(String str) {
     switch (str) {
-      case 'Action.assign':
+      case '=':
         return Action.assign;
-      case 'Action.add':
+      case ' add ':
         return Action.add;
-      case 'Action.remove':
+      case ' remove ':
         return Action.remove;
+      case ' removeLast ':
+        return Action.removeLast;
       default:
         throw Exception("unknown action: $str");
     }
+  }
+
+  @override
+  String toString() {
+    return switch (this) {
+      Action.assign => '=',
+      Action.add => ' add ',
+      Action.remove => ' remove ',
+      Action.removeLast => ' removeLast ',
+    };
   }
 }
 
@@ -36,9 +49,8 @@ class ForseValue {
         action = Action.parse(map['action']);
 
   ForseValue.parse(this.task, String text, Iterable<String> fields) {
-    final (a, d) = _getLeftAndRight(text);
-    action = a;
-    final res = text.split(d).map((e) => e.trim()).take(2);
+    action = _getLeftAndRight(text);
+    final res = text.split(action.toString()).map((e) => e.trim()).take(2);
     final fieldAndKeys = res.first.trim();
     final sValue = res.last.trim();
 
@@ -63,16 +75,14 @@ class ForseValue {
         "action": action.toString(),
       };
 
-  static (Action, String) _getLeftAndRight(String text) {
-    if (text.contains('=')) {
-      return (Action.assign, '=');
-    } else if (text.contains(' add ')) {
-      return (Action.add, ' add ');
-    } else if (text.contains(' remove ')) {
-      return (Action.remove, ' remove ');
-    } else {
-      throw Exception("unknown action in: $text");
+  static Action _getLeftAndRight(String text) {
+    for (var type in Action.values) {
+      if (text.contains(type.toString())) {
+        return type;
+      }
     }
+
+    throw Exception("unknown action in: $text");
   }
 
   static List<String> _parseKeys(String text) {
