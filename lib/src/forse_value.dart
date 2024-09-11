@@ -126,6 +126,18 @@ class ForseValue {
       return dValue;
     }
 
+    final isString = switch (sValue.startsWith("'")) {
+      true => sValue.endsWith("'"),
+      false => switch (sValue.startsWith('"')) {
+          true => sValue.endsWith('"'),
+          false => false,
+        },
+    };
+
+    if (isString) {
+      return sValue.substring(1, sValue.length - 1);
+    }
+
     try {
       return jsonDecode(sValue);
     } on FormatException {
