@@ -129,6 +129,10 @@ class ForseValue {
       return dValue;
     }
 
+    if (sValue.startsWith("#T")) {
+      return sValue;
+    }
+
     final isString = switch (sValue.startsWith("'")) {
       true => sValue.endsWith("'"),
       false => switch (sValue.startsWith('"')) {
