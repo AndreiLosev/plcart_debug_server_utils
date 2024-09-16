@@ -3,6 +3,7 @@ import 'package:debug_server_utils/debug_server_utils.dart';
 enum CommandKind {
   getRegisteredEvents,
   getRegisteredTasks,
+  getAllErrors,
   runEvent,
   subscribeTask,
   unsubscribeTask,
@@ -15,6 +16,7 @@ enum CommandKind {
         CommandKind.subscribeTask => 20,
         CommandKind.unsubscribeTask => 30,
         CommandKind.setTaskValue => 40,
+        CommandKind.getAllErrors => 50,
       };
 }
 
@@ -26,6 +28,7 @@ extension ToCommandKind on int {
         20 => CommandKind.subscribeTask,
         30 => CommandKind.unsubscribeTask,
         40 => CommandKind.setTaskValue,
+        50 => CommandKind.getAllErrors,
         _ => throw Exception("invalide CommandKind code: $this"),
       };
 }
