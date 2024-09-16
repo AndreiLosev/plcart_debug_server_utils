@@ -118,5 +118,6 @@ ClientCommand parseClientCommand(int type, dynamic payload) {
     CommandKind.unsubscribeTask => ClientCommand(kind, SimplePayload(payload)),
     CommandKind.setTaskValue =>
       ClientCommand(kind, SetTaskValuePayload(payload)),
+    CommandKind.getAllErrors => ClientCommand(kind, null),
   };
 }
